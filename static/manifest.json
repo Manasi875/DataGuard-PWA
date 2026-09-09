@@ -1,0 +1,17 @@
+{
+  "name": "DataGuard - Data Quality Platform",
+  "short_name": "DataGuard",
+  "description": "Professional data quality profiling, reporting and administration platform.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#0f172a",
+  "orientation": "any",
+  "icons": [
+    {"src":"/static/icons/icon-192.svg","sizes":"192x192","type":"image/svg+xml","purpose":"any maskable"},
+    {"src":"/static/icons/icon-512.svg","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"},
+    {"src":"/static/icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"/static/icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
+}

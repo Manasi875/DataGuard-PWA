@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#0f172a"
+    >
+
+    <link
+        rel="manifest"
+        href="{{ url_for('static', filename='manifest.json') }}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <title>
+        DataGuard | Datasets
+    </title>
+
+</head>
+
+
+<body>
+
+<div class="app-layout">
+
+
+<aside
+    class="sidebar"
+    id="sidebar"
+>
+
+    <div class="sidebar-brand">
+
+        <div class="brand-mark">
+            DG
+        </div>
+
+        <div>
+
+            <strong>
+                DataGuard
+            </strong>
+
+            <span>
+                Quality Admin
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <nav>
+
+        <a
+            class="nav-item"
+            href="{{ url_for('dashboard') }}"
+        >
+            <span>⌂</span>
+            Dashboard
+        </a>
+
+
+        <a
+            class="nav-item active"
+            href="{{ url_for('datasets') }}"
+        >
+            <span>▤</span>
+            Datasets
+        </a>
+
+
+        <a
+            class="nav-item"
+            href="{{ url_for('profile') }}"
+        >
+            <span>◉</span>
+            Profile
+        </a>
+
+    </nav>
+
+
+    <div class="sidebar-bottom">
+
+        <div class="mini-user">
+
+            <div class="avatar">
+                {{ session['username'][0]|upper }}
+            </div>
+
+            <div>
+
+                <strong>
+                    {{ session['username'] }}
+                </strong>
+
+                <span>
+                    Administrator
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <a
+            class="nav-item logout"
+            href="{{ url_for('logout') }}"
+        >
+
+            <span>↪</span>
+
+            Logout
+
+        </a>
+
+    </div>
+
+</aside>
+
+
+<main class="main-content">
+
+
+<header class="topbar">
+
+    <button
+        class="mobile-menu"
+        onclick="toggleSidebar()"
+    >
+        ☰
+    </button>
+
+
+    <div>
+
+        <p class="eyebrow">
+            DATA LIBRARY
+        </p>
+
+        <h1>
+            Datasets
+        </h1>
+
+    </div>
+
+
+    <a
+        class="btn primary"
+        href="{{ url_for('dashboard') }}"
+    >
+        + Analyze dataset
+    </a>
+
+</header>
+
+
+<section class="panel">
+
+
+<div class="panel-heading">
+
+    <div>
+
+        <p class="eyebrow">
+            ALL FILES
+        </p>
+
+        <h2>
+            Dataset inventory
+        </h2>
+
+    </div>
+
+
+    <input
+        class="search-input"
+        id="datasetSearch"
+        onkeyup="filterTable()"
+        placeholder="Search datasets..."
+    >
+
+</div>
+
+
+{% if datasets %}
+
+<div class="table-wrap">
+
+<table id="datasetTable">
+
+<thead>
+
+<tr>
+
+<th>
+    Dataset
+</th>
+
+<th>
+    Rows
+</th>
+
+<th>
+    Columns
+</th>
+
+<th>
+    Issues
+</th>
+
+<th>
+    Quality
+</th>
+
+<th>
+    Uploaded
+</th>
+
+<th></th>
+
+</tr>
+
+</thead>
+
+
+<tbody>
+
+{% for d in datasets %}
+
+<tr>
+
+<td>
+
+<div class="dataset-name">
+
+<span class="file-icon">
+    DATA
+</span>
+
+<strong>
+    {{ d['original_name'] }}
+</strong>
+
+</div>
+
+</td>
+
+
+<td>
+    {{ "{:,}".format(d['rows_count']) }}
+</td>
+
+
+<td>
+    {{ d['columns_count'] }}
+</td>
+
+
+<td>
+
+{{ d['missing_count']
+   +
+   d['duplicate_count']
+   +
+   d['outlier_count'] }}
+
+</td>
+
+
+<td>
+
+<span
+    class="score
+    {{
+    'excellent'
+    if d['quality_score'] >= 90
+    else
+    'good-score'
+    if d['quality_score'] >= 75
+    else
+    'warning-score'
+    }}"
+>
+
+{{ d['quality_score'] }}%
+
+</span>
+
+</td>
+
+
+<td>
+    {{ d['created_at'][:16] }}
+</td>
+
+
+<td>
+
+<a
+    class="icon-link"
+    href="{{
+        url_for(
+            'dataset_details',
+            dataset_id=d['id']
+        )
+    }}"
+>
+    View →
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+
+{% else %}
+
+<div class="empty-state">
+
+<div class="empty-icon">
+    ▤
+</div>
+
+<h3>
+    Your dataset library is empty
+</h3>
+
+<p>
+    Go to the dashboard and upload a CSV or Excel file.
+</p>
+
+</div>
+
+{% endif %}
+
+
+</section>
+
+
+</main>
+
+</div>
+
+
+<script
+    src="{{ url_for('static', filename='js/app.js') }}"
+></script>
+
+</body>
+
+</html>

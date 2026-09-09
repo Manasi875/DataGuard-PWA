@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#0f172a"
+    >
+
+    <link
+        rel="manifest"
+        href="{{ url_for('static', filename='manifest.json') }}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <title>
+        DataGuard | {{ dataset['original_name'] }}
+    </title>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+.advanced-eda{margin-top:24px}.advanced-eda .section-intro{margin-bottom:18px}.advanced-eda .section-intro .eyebrow{margin-bottom:6px}.advanced-eda .eda-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.advanced-eda .eda-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}.advanced-eda .eda-card h3{font-size:16px;margin-bottom:4px}.advanced-eda .eda-card p{color:var(--muted);font-size:13px;margin-bottom:14px}.advanced-eda .chart-box{height:280px;position:relative}.advanced-eda .full-card{grid-column:1/-1}.advanced-eda .table-scroll{overflow:auto}.advanced-eda table{width:100%;border-collapse:collapse;min-width:760px}.advanced-eda th,.advanced-eda td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:13px;white-space:nowrap}.advanced-eda th{font-weight:700;background:var(--surface-2)}.advanced-eda .type-pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef4ff;color:#2563eb;font-size:11px;font-weight:700}.advanced-eda .recommendation-list{display:grid;gap:10px}.advanced-eda .recommendation-item{display:flex;gap:12px;padding:13px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}.advanced-eda .recommendation-item strong{display:block;font-size:13px}.advanced-eda .recommendation-item p{margin:4px 0 0;font-size:12px}.advanced-eda .rec-dot{width:9px;height:9px;border-radius:50%;background:var(--primary);margin-top:5px;flex:0 0 auto}.advanced-eda .corr td{text-align:center;font-weight:700}.advanced-eda .corr th{text-align:center}.advanced-eda .preview-table{min-width:900px}.advanced-eda .empty-eda{padding:34px;text-align:center;border:1px dashed #cbd5e1;border-radius:16px;color:var(--muted)}.advanced-eda .file-warning{margin-bottom:18px;padding:14px 16px;border-radius:12px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:13px}.advanced-eda .insight-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.advanced-eda .insight{background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:14px}.advanced-eda .insight span{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}.advanced-eda .insight strong{font-size:18px}.advanced-eda .column-search{max-width:260px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;outline:none}.advanced-eda .selected-row{background:#eff6ff!important}.advanced-eda .quality-reco{margin-top:18px}@media(max-width:900px){.advanced-eda .eda-grid{grid-template-columns:1fr}.advanced-eda .full-card{grid-column:auto}.advanced-eda .insight-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.advanced-eda .insight-grid{grid-template-columns:1fr}}
+</style>
+
+</head>
+
+
+<body>
+
+<div class="app-layout">
+
+
+<aside
+    class="sidebar"
+    id="sidebar"
+>
+
+    <div class="sidebar-brand">
+
+        <div class="brand-mark">
+            DG
+        </div>
+
+        <div>
+
+            <strong>
+                DataGuard
+            </strong>
+
+            <span>
+                Quality Admin
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <nav>
+
+        <a
+            class="nav-item"
+            href="{{ url_for('dashboard') }}"
+        >
+            <span>⌂</span>
+            Dashboard
+        </a>
+
+
+        <a
+            class="nav-item active"
+            href="{{ url_for('datasets') }}"
+        >
+            <span>▤</span>
+            Datasets
+        </a>
+
+
+        <a
+            class="nav-item"
+            href="{{ url_for('profile') }}"
+        >
+            <span>◉</span>
+            Profile
+        </a>
+
+    </nav>
+
+
+    <div class="sidebar-bottom">
+
+        <div class="mini-user">
+
+            <div class="avatar">
+                {{ session['username'][0]|upper }}
+            </div>
+
+            <div>
+
+                <strong>
+                    {{ session['username'] }}
+                </strong>
+
+                <span>
+                    Administrator
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <a
+            class="nav-item logout"
+            href="{{ url_for('logout') }}"
+        >
+
+            <span>↪</span>
+
+            Logout
+
+        </a>
+
+    </div>
+
+</aside>
+
+
+<main class="main-content">
+
+
+<header class="topbar">
+
+    <button
+        class="mobile-menu"
+        onclick="toggleSidebar()"
+    >
+        ☰
+    </button>
+
+
+    <div>
+
+        <a
+            class="back-link"
+            href="{{ url_for('datasets') }}"
+        >
+            ← Back to datasets
+        </a>
+
+        <h1>
+            {{ dataset['original_name'] }}
+        </h1>
+
+    </div>
+
+
+    <div class="top-actions">
+
+        <a
+            class="btn secondary"
+            href="{{
+                url_for(
+                    'download_dataset',
+                    dataset_id=dataset['id']
+                )
+            }}"
+        >
+            Download original
+        </a>
+
+
+        <a
+            class="btn primary"
+            href="{{
+                url_for(
+                    'report',
+                    dataset_id=dataset['id']
+                )
+            }}"
+        >
+            View report
+        </a>
+
+    </div>
+
+</header>
+
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+
+    {% for category, message in messages %}
+
+        <div class="alert {{ category }}">
+            {{ message }}
+        </div>
+
+    {% endfor %}
+
+{% endwith %}
+
+
+<!-- QUALITY HERO -->
+
+<section class="detail-hero">
+
+
+<div>
+
+    <p class="eyebrow">
+        QUALITY SCORE
+    </p>
+
+
+    <div class="big-score">
+
+        {{ dataset['quality_score'] }}
+
+        <small>
+            %
+        </small>
+
+    </div>
+
+
+    <span
+        class="badge
+        {{
+        'good'
+        if dataset['quality_score'] >= 75
+        else
+        'warning'
+        }}"
+    >
+
+        {{
+            quality_label(
+                dataset['quality_score']
+            )
+        }}
+
+    </span>
+
+</div>
+
+
+<div class="detail-metrics">
+
+
+<div>
+
+    <span>
+        Rows
+    </span>
+
+    <strong>
+        {{ "{:,}".format(dataset['rows_count']) }}
+    </strong>
+
+</div>
+
+
+<div>
+
+    <span>
+        Columns
+    </span>
+
+    <strong>
+        {{ dataset['columns_count'] }}
+    </strong>
+
+</div>
+
+
+<div>
+
+    <span>
+        Missing
+    </span>
+
+    <strong>
+        {{ "{:,}".format(dataset['missing_count']) }}
+    </strong>
+
+</div>
+
+
+<div>
+
+    <span>
+        Duplicates
+    </span>
+
+    <strong>
+        {{ "{:,}".format(dataset['duplicate_count']) }}
+    </strong>
+
+</div>
+
+
+<div>
+
+    <span>
+        Outliers
+    </span>
+
+    <strong>
+        {{ "{:,}".format(dataset['outlier_count']) }}
+    </strong>
+
+</div>
+
+
+</div>
+
+</section>
+
+
+<!-- ACTIONS -->
+
+<section class="action-row">
+
+
+<form
+    method="POST"
+    action="{{
+        url_for(
+            'clean_dataset',
+            dataset_id=dataset['id']
+        )
+    }}"
+>
+
+<button
+    class="btn primary"
+    type="submit"
+    onclick="return confirm(
+        'Create a cleaned copy using DataGuard cleaning rules?'
+    )"
+>
+    ✦ Clean & download
+</button>
+
+</form>
+
+
+<a
+    class="btn secondary"
+    href="{{
+        url_for(
+            'download_report',
+            dataset_id=dataset['id']
+        )
+    }}"
+>
+    ↓ Download quality report
+</a>
+
+
+</section>
+
+
+<!-- ADVANCED ANALYSIS -->
+<section class="advanced-eda">
+
+    {% if not file_available %}
+    <div class="file-warning">
+        <strong>Dataset file unavailable.</strong>
+        The database record exists, but the original CSV/XLSX file could not be found in the local uploads folder.
+        Upload the dataset again from the Dashboard to regenerate the analysis.
+    </div>
+    {% endif %}
+
+    <div class="section-intro">
+        <p class="eyebrow">AUTOMATED EDA</p>
+        <h2>Explore the dataset</h2>
+        <p class="muted">DataGuard automatically generates statistics, distributions, relationships and quality insights.</p>
+    </div>
+
+    <div class="insight-grid">
+        <div class="insight"><span>Numeric fields</span><strong>{{ eda['numeric_cols']|length }}</strong></div>
+        <div class="insight"><span>Categorical fields</span><strong>{{ eda['categorical_cols']|length }}</strong></div>
+        <div class="insight"><span>Charts generated</span><strong>{{ eda['charts']|length }}</strong></div>
+        <div class="insight"><span>Preview rows</span><strong>{{ preview|length }}</strong></div>
+    </div>
+
+    <div class="eda-grid" style="margin-top:18px">
+        {% for chart in eda['charts'] %}
+        <div class="eda-card">
+            <h3>{{ chart['title'] }}</h3>
+            <p>Automatically generated from your dataset.</p>
+            <div class="chart-box"><canvas id="dgChart{{ loop.index }}"></canvas></div>
+        </div>
+        {% else %}
+        <div class="eda-card full-card">
+            <div class="empty-eda">
+                <h3>No automatic charts available</h3>
+                <p>DataGuard could not find suitable numeric or categorical fields for visualization.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if eda['correlation'] %}
+    <div class="eda-card full-card" style="margin-top:18px">
+        <p class="eyebrow">RELATIONSHIPS</p>
+        <h3>Correlation matrix</h3>
+        <p>Values closer to +1 or -1 indicate stronger linear relationships.</p>
+        <div class="table-scroll">
+            <table class="corr">
+                <thead>
+                    <tr><th>Feature</th>{% for c in eda['correlation_columns'] %}<th>{{ c }}</th>{% endfor %}</tr>
+                </thead>
+                <tbody>
+                    {% for row in eda['correlation'] %}
+                    <tr>
+                        <th>{{ row['name'] }}</th>
+                        {% for value in row['values'] %}<td data-corr="{{ value }}">{{ '%.2f'|format(value) }}</td>{% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="eda-card full-card" style="margin-top:18px">
+        <p class="eyebrow">STATISTICS</p>
+        <h3>Statistical summary</h3>
+        <p>Descriptive statistics calculated directly from the uploaded file.</p>
+        <div style="margin-bottom:14px;text-align:right">
+            <input class="column-search" id="dgSummarySearch" placeholder="Search columns...">
+        </div>
+        <div class="table-scroll">
+            <table id="dgSummaryTable">
+                <thead><tr><th>Column</th><th>Type</th><th>Count</th><th>Missing</th><th>Unique</th><th>Mean</th><th>Median</th><th>Min</th><th>Max</th></tr></thead>
+                <tbody>
+                    {% for s in eda['summary'] %}
+                    <tr>
+                        <td><strong>{{ s['name'] }}</strong></td>
+                        <td><span class="type-pill">{{ s['type'] }}</span></td>
+                        <td>{{ s['count'] }}</td><td>{{ s['missing'] }}</td><td>{{ s['unique'] }}</td>
+                        <td>{{ s['mean'] if s['mean'] is not none else '—' }}</td>
+                        <td>{{ s['median'] if s['median'] is not none else '—' }}</td>
+                        <td>{{ s['min'] if s['min'] is not none else '—' }}</td>
+                        <td>{{ s['max'] if s['max'] is not none else '—' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="9" style="text-align:center;padding:28px">No statistical summary available.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="eda-card full-card" style="margin-top:18px">
+        <p class="eyebrow">SMART INSIGHTS</p>
+        <h3>Recommendations</h3>
+        <p>Suggested actions based on detected data-quality issues.</p>
+        <div class="recommendation-list">
+            {% for r in recommendations %}
+            <div class="recommendation-item">
+                <span class="rec-dot"></span>
+                <div><strong>{{ r['title'] }}</strong><p>{{ r['text'] }}</p></div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="eda-card full-card" style="margin-top:18px">
+        <p class="eyebrow">DATA PREVIEW</p>
+        <h3>Sample records</h3>
+        <p>First 8 rows from the uploaded dataset.</p>
+        {% if preview %}
+        <div class="table-scroll">
+            <table class="preview-table">
+                <thead><tr>{% for key in preview[0].keys() %}<th>{{ key }}</th>{% endfor %}</tr></thead>
+                <tbody>
+                    {% for row in preview %}
+                    <tr>{% for key,value in row.items() %}<td>{{ value if value != '' else '—' }}</td>{% endfor %}</tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-eda"><h3>No preview available</h3><p>No records are currently available for preview.</p></div>
+        {% endif %}
+    </div>
+
+</section>
+
+<script>
+window.DG_EDA = {{ eda|tojson }};
+window.DG_COLUMNS = {{ column_insight|tojson }};
+
+(function(){
+    function drawCharts(){
+        if(typeof Chart === 'undefined' || !window.DG_EDA) return;
+        (window.DG_EDA['charts'] || []).forEach(function(chart,index){
+            var canvas=document.getElementById('dgChart'+(index+1));
+            if(!canvas) return;
+            if(chart['kind']==='scatter'){
+                new Chart(canvas,{type:'scatter',data:{datasets:[{label:chart['title'],data:(chart['x']||[]).map(function(x,i){return {x:x,y:chart['y'][i]};}),pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+            }else{
+                new Chart(canvas,{type:'bar',data:{labels:chart['labels']||[],datasets:[{label:chart['title'],data:chart['values']||[],borderWidth:1,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{maxRotation:35}},y:{beginAtZero:true}}}});
+            }
+        });
+    }
+    function colorCorrelation(){
+        document.querySelectorAll('[data-corr]').forEach(function(cell){
+            var value=parseFloat(cell.getAttribute('data-corr')||0);
+            var intensity=Math.min(1,Math.abs(value));
+            cell.style.background=value>=0?'rgba(37,99,235,'+(0.06+0.20*intensity)+')':'rgba(220,38,38,'+(0.05+0.18*intensity)+')';
+        });
+    }
+    function filterSummary(){
+        var input=document.getElementById('dgSummarySearch'),table=document.getElementById('dgSummaryTable');
+        if(!input||!table)return;
+        var q=input.value.toLowerCase().trim();
+        table.querySelectorAll('tbody tr').forEach(function(row){row.style.display=row.innerText.toLowerCase().includes(q)?'':'none';});
+    }
+    document.addEventListener('DOMContentLoaded',function(){
+        drawCharts();colorCorrelation();
+        var search=document.getElementById('dgSummarySearch');
+        if(search)search.addEventListener('input',filterSummary);
+    });
+})();
+</script>
+
+<!-- COLUMN PROFILE -->
+
+<section class="panel">
+
+
+<div class="panel-heading">
+
+    <div>
+
+        <p class="eyebrow">
+            COLUMN ANALYSIS
+        </p>
+
+        <h2>
+            Data profile
+        </h2>
+
+    </div>
+
+
+    <input
+        class="search-input"
+        id="columnSearch"
+        onkeyup="filterColumns()"
+        placeholder="Search columns..."
+    >
+
+</div>
+
+
+<div class="table-wrap">
+
+<table id="columnTable">
+
+<thead>
+
+<tr>
+
+<th>
+    Column
+</th>
+
+<th>
+    Data type
+</th>
+
+<th>
+    Missing
+</th>
+
+<th>
+    Unique
+</th>
+
+<th>
+    Outlier flags
+</th>
+
+<th>
+    Health
+</th>
+
+</tr>
+
+</thead>
+
+
+<tbody>
+
+{% for col in columns %}
+
+<tr>
+
+<td>
+    <strong>
+        {{ col['column_name'] }}
+    </strong>
+</td>
+
+
+<td>
+
+<span class="type-pill">
+    {{ col['data_type'] }}
+</span>
+
+</td>
+
+
+<td>
+    {{ col['missing_count'] }}
+</td>
+
+
+<td>
+    {{ col['unique_count'] }}
+</td>
+
+
+<td>
+    {{ col['outlier_count'] }}
+</td>
+
+
+<td>
+
+{% set issue =
+    col['missing_count']
+    +
+    col['outlier_count']
+%}
+
+
+<span
+    class="health-dot
+    {{
+    'healthy'
+    if issue == 0
+    else
+    'attention'
+    }}"
+></span>
+
+
+{{ 'Healthy'
+   if issue == 0
+   else
+   'Review'
+}}
+
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+
+</section>
+
+
+</main>
+
+</div>
+
+
+<script
+    src="{{ url_for('static', filename='js/app.js') }}"
+></script>
+
+</body>
+
+</html>

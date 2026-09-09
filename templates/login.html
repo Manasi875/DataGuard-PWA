@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#0f172a"
+    >
+
+    <link
+        rel="manifest"
+        href="{{ url_for('static', filename='manifest.json') }}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <title>DataGuard | Login</title>
+
+</head>
+
+<body class="auth-page">
+
+<main class="auth-shell">
+
+    <section class="auth-brand">
+
+        <div class="brand-mark">
+            DG
+        </div>
+
+        <p class="eyebrow">
+            DATA QUALITY PLATFORM
+        </p>
+
+        <h1>
+            Protect the quality of your data.
+        </h1>
+
+        <p>
+            Upload datasets, discover quality issues,
+            clean your data and generate professional reports.
+        </p>
+
+        <div class="auth-points">
+
+            <span>✓ Automated profiling</span>
+
+            <span>✓ Quality scoring</span>
+
+            <span>✓ Cleaning & reports</span>
+
+        </div>
+
+    </section>
+
+
+    <section class="auth-card">
+
+        <div class="brand-inline">
+
+            <div class="brand-mark small">
+                DG
+            </div>
+
+            <strong>
+                DataGuard
+            </strong>
+
+        </div>
+
+        <h2>
+            Welcome back
+        </h2>
+
+        <p class="muted">
+            Sign in to your data quality workspace.
+        </p>
+
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% for category, message in messages %}
+
+                <div class="alert {{ category }}">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endwith %}
+
+
+        <form
+            method="POST"
+            class="form-stack"
+        >
+
+            <label>
+                Username or email
+            </label>
+
+            <input
+                type="text"
+                name="identity"
+                placeholder="you@example.com"
+                required
+            >
+
+
+            <label>
+                Password
+            </label>
+
+            <input
+                type="password"
+                name="password"
+                placeholder="••••••••"
+                required
+            >
+
+
+            <button
+                class="btn primary full"
+                type="submit"
+            >
+                Sign in
+            </button>
+
+        </form>
+
+
+        <p class="auth-switch">
+
+            Don't have an account?
+
+            <a href="{{ url_for('register') }}">
+                Create one
+            </a>
+
+        </p>
+
+    </section>
+
+</main>
+
+
+<script
+    src="{{ url_for('static', filename='js/app.js') }}"
+></script>
+
+</body>
+
+</html>
